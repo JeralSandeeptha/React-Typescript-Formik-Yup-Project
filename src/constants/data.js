@@ -1,3 +1,9 @@
+export const errorMessage = { color: 'red', fontWeight: 'normal', marginTop: '10px' }
+export const successMessage = { color: 'green', fontWeight: 'normal', marginTop: '10px' }
+export const logo = { alignSelf: 'flex-end' }
+export const messageConatiner = { gap: '10px', display: 'flex', alignItems: 'center', color: 'red' }
+export const successConatiner = { gap: '10px', display: 'flex', alignItems: 'center', color: 'green' }
+
 export const months = [
     {
         title: 'January',

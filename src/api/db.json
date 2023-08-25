@@ -9,6 +9,26 @@
       "birthday": "29 May 2000",
       "isSubscribed": true,
       "id": 1
+    },
+    {
+      "firstName": "Yohan",
+      "lastName": "Sandeepa",
+      "email": "yohan.sandeepa@gmail.com",
+      "password": "mnys0529",
+      "gender": "male",
+      "birthday": "29 May 2000",
+      "isSubscribed": true,
+      "id": 2
+    },
+    {
+      "firstName": "Jeral",
+      "lastName": "Sandeeptha",
+      "email": "jeral.sandeeptha1@gmail.com",
+      "password": "Jeral@0529",
+      "gender": "male",
+      "birthday": "29 May 2000",
+      "isSubscribed": true,
+      "id": 3
     }
   ]
 }

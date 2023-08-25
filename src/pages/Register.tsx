@@ -1,8 +1,11 @@
 import React from 'react'
 import '../styles/Register/Register.css';
-import axios from 'axios';
-import { months, dates, years } from '../constants/data';
+import { months, dates, years, errorMessage, successMessage, logo, messageConatiner, successConatiner } from '../constants/data';
 import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { registerNewUser } from '../services/services';
+import { RxCross2 } from "react-icons/rx";
+import { AiOutlineCheck } from "react-icons/ai";
 
 type RegisterProps = {
     
@@ -22,6 +25,11 @@ interface User {
     isSubscribed: boolean;
 }
 
+const capitalLetterRegex = /[A-Z]/;
+const lowercaseLetterRegex = /[a-z]/;
+const specialCharacterRegex = /[!@#$%^&*()\-_=+[\]{}|;:'",.<>/?\\]/;
+const digitRegex = /\d/;
+
 const Register = (props: RegisterProps) => {
 
     const formik = useFormik({
@@ -38,6 +46,12 @@ const Register = (props: RegisterProps) => {
           confirmPassword: '',
           isSubscribed: false
         },
+        validationSchema: Yup.object({
+            firstName: Yup.string().max(50, "First Name must be 50 characters or less").required("First Name is required"),
+            lastName: Yup.string().max(50, "Last Name must be 50 characters or less").required("Last Name is required"),
+            email: Yup.string().max(50, "Email must be 50 characters or less").required("Email is not valid").email("Invalid email address"),
+            phone: Yup.string().max(10, "Phone number be 10 characters").required("Phone number is not valid"),
+        }),
         onSubmit: (values: User) => {
             registerUser(values);
         },
@@ -60,16 +74,8 @@ const Register = (props: RegisterProps) => {
 
         try {
             if (values.password === values.confirmPassword) {
-                axios.post('http://localhost:5000/users', user)
-                .then( (res) => {
-                    if (res.status === 201) {
-                        alert('User registration successfull');
-                        setDefaultValues();
-                    }                
-                })
-                .catch( (error) => {
-                    console.log(error);
-                })
+                registerNewUser(user);
+                setDefaultValues();
             } else {
                 alert('Both passwords should be match');
             }
@@ -87,19 +93,23 @@ const Register = (props: RegisterProps) => {
                     <h1 className='header'>Registration Form</h1>
                     <div className="input">
                         <h5 className='subheader'>First Name<span className='start-mark'>*</span></h5>
-                        <input name="firstName" type="text" className='input-field' placeholder='Jhone' value={formik.values.firstName} onChange={formik.handleChange}/>
+                        <input onBlur={formik.handleBlur} name="firstName" type="text" className='input-field' placeholder='Jhone' value={formik.values.firstName} onChange={formik.handleChange}/>
+                        { formik.touched.firstName && formik.errors.firstName ? <h5 className='error' style={errorMessage}>First Name is required</h5> : null }
                     </div>
                     <div className="input">
                         <h5 className='subheader'>Last Name<span className='start-mark'>*</span></h5>
-                        <input name='lastName' type="text" className='input-field' placeholder='Piter' value={formik.values.lastName} onChange={formik.handleChange}/>
+                        <input onBlur={formik.handleBlur} name='lastName' type="text" className='input-field' placeholder='Piter' value={formik.values.lastName} onChange={formik.handleChange}/>
+                        { formik.touched.lastName && formik.errors.lastName ? <h5 className='error-message' style={errorMessage}>Last Name is required</h5> : null }
                     </div>
                     <div className="input">
                         <h5 className='subheader'>Email <span className='start-mark'>*</span></h5>
-                        <input name='email' type="email" className='input-field' placeholder='abcd@gmail.com' value={formik.values.email} onChange={formik.handleChange}/>
+                        <input onBlur={formik.handleBlur} name='email' type="email" className='input-field' placeholder='abcd@gmail.com' value={formik.values.email} onChange={formik.handleChange}/>
+                        { formik.touched.email && formik.errors.email ? <h5 className='error-message' style={errorMessage}>Email is not valid</h5> : null }
                     </div>
                     <div className="input">
                         <h5 className='subheader'>Phone<span className='start-mark'>*</span></h5>
-                        <input name='phone' type="number" className='input-field' placeholder='example' value={formik.values.phone} onChange={formik.handleChange}/>
+                        <input onBlur={formik.handleBlur} name='phone' type="number" className='input-field' placeholder='example' value={formik.values.phone} onChange={formik.handleChange}/>
+                        { formik.touched.phone && formik.errors.phone ? <h5 className='error-message' style={errorMessage}>Phone number is not valid</h5> : null }
                     </div>
                     <div className="input-radio">
                         <div className="radio">
@@ -146,10 +156,42 @@ const Register = (props: RegisterProps) => {
                     <div className="input">
                         <h5 className='subheader'>Password<span className='start-mark'>*</span></h5>
                         <input name='password' type="password" className='input-field' placeholder='#########' value={formik.values.password} onChange={formik.handleChange}/>
+                        { formik.values.password.length < 7 ? (
+                            <div style={messageConatiner}><RxCross2 style={logo}/><h5 className='error-message' style={errorMessage}>Password should contain atleast 8 characters</h5></div>
+                        ) : null }
+                        { capitalLetterRegex.test(formik.values.password) ? null : (
+                            <div style={messageConatiner}><RxCross2 style={logo}/><h5 className='error-message' style={errorMessage}>Password should contain atleast one capital letter</h5></div>
+                        ) }
+                        { lowercaseLetterRegex.test(formik.values.password) ? null : (
+                            <div style={messageConatiner}><RxCross2 style={logo}/><h5 className='error-message' style={errorMessage}>Password should contain atleast one single letter</h5></div>
+                        ) }
+                        { specialCharacterRegex.test(formik.values.password) ? null : (
+                            <div style={messageConatiner}><RxCross2 style={logo}/><h5 className='error-message' style={errorMessage}>Password should contain atleast one special character</h5></div>
+                        ) }
+                        { digitRegex.test(formik.values.password) ? null : (
+                            <div style={messageConatiner}><RxCross2 style={logo}/><h5 className='error-message' style={errorMessage}>Password should contain atleast one number</h5></div>
+                        ) }
+                        
+                        { formik.values.password.length > 7 ? (
+                            <div style={successConatiner}><AiOutlineCheck style={logo}/><h5 className='error-message' style={successMessage}>Password contains atleast 8 characters</h5></div>
+                        ) : null }
+                        { capitalLetterRegex.test(formik.values.password) ? (
+                            <div style={successConatiner}><AiOutlineCheck style={logo}/><h5 className='error-message' style={successMessage}>Password contains atleast one capital letter</h5></div>
+                        ) : null}
+                        { lowercaseLetterRegex.test(formik.values.password) ? (
+                            <div style={successConatiner}><AiOutlineCheck style={logo}/><h5 className='error-message' style={successMessage}>Password contains atleast one single letter</h5></div>
+                        ) : null }
+                        { specialCharacterRegex.test(formik.values.password) ? (
+                            <div style={successConatiner}><AiOutlineCheck style={logo}/><h5 className='error-message' style={successMessage}>Password contains atleast one special character</h5></div>
+                        ) : null }
+                        { digitRegex.test(formik.values.password) ? (
+                            <div style={successConatiner}><AiOutlineCheck style={logo}/><h5 className='error-message' style={successMessage}>Password contains atleast one number</h5></div>
+                        ) : null }
                     </div>
                     <div className="input">
                         <h5 className='subheader'>Confirm password<span className='start-mark'>*</span></h5>
                         <input name='confirmPassword' type="password" className='input-field' placeholder='#########' value={formik.values.confirmPassword} onChange={formik.handleChange}/>
+                        { formik.values.password != formik.values.confirmPassword ? <h5 className='error-message' style={errorMessage}>Password not match</h5> : null }
                     </div>
                     <div className="input-description">
                         <input checked={formik.values.isSubscribed} onChange={formik.handleChange} name='isSubscribed' type="checkbox" className='check-box'/>

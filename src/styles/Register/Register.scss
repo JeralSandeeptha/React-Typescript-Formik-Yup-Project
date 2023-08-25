@@ -34,6 +34,10 @@ $backColor: rgb(245, 245, 245);
                 margin-top: 10px;
                 width: 400px;
 
+                .error {
+                    color: red;
+                }
+
                 .elements {
                     display: grid;
                     grid-template-columns: 1fr 2fr 3fr;
