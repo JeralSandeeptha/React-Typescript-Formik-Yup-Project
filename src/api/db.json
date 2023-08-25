@@ -1,5 +1,14 @@
 {
   "users": [
-    
+    {
+      "firstName": "Jeral",
+      "lastName": "Sandeeptha",
+      "email": "jeral.sandeeptha1@gmail.com",
+      "password": "mnjs0529",
+      "gender": "male",
+      "birthday": "29 May 2000",
+      "isSubscribed": true,
+      "id": 1
+    }
   ]
 }

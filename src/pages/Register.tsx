@@ -1,6 +1,7 @@
 import React from 'react'
 import '../styles/Register/Register.css';
 import axios from 'axios';
+import { months, dates, years } from '../constants/data';
 import { useFormik } from 'formik';
 
 type RegisterProps = {
@@ -42,8 +43,39 @@ const Register = (props: RegisterProps) => {
         },
     });
 
+    const setDefaultValues = () => {
+        formik.handleReset(formik.values);
+    }
+
     const registerUser = (values: User) => {
-        console.log(values);
+        const user = {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            password: values.password,
+            gender: values.gender,
+            birthday: values.day + " " + values.month + " " + values.year,
+            isSubscribed: values.isSubscribed
+        }
+
+        try {
+            if (values.password === values.confirmPassword) {
+                axios.post('http://localhost:5000/users', user)
+                .then( (res) => {
+                    if (res.status === 201) {
+                        alert('User registration successfull');
+                        setDefaultValues();
+                    }                
+                })
+                .catch( (error) => {
+                    console.log(error);
+                })
+            } else {
+                alert('Both passwords should be match');
+            }
+        } catch (error) {
+            console.log('Server error, Please try again later.');
+        }
     }
 
     console.log(formik.values);
@@ -83,28 +115,31 @@ const Register = (props: RegisterProps) => {
                         <h5 className='subheader'>Birth Day</h5>
                         <div className='elements'>
                             <select onChangeCapture={formik.handleChange} value={formik.values.day} name="day" id="day" className='input-field-two'>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
+                                {
+                                    dates.map( (date, index) => {
+                                        return (
+                                            <option key={index} value={date.value}>{date.title}</option>
+                                        )
+                                    })
+                                }
                             </select>
                             <select onChangeCapture={formik.handleChange} value={formik.values.month} name="month" id="month" className='input-field-two'>
-                                <option value="January">January</option>
-                                <option value="February">February</option>
-                                <option value="March">March</option>
-                                <option value="April">April</option>
-                                <option value="May">May</option>
-                                <option value="June">June</option>
-                                <option value="July">July</option>
-                                <option value="August">August</option>
-                                <option value="September">September</option>
-                                <option value="October">October</option>
-                                <option value="November">November</option>
-                                <option value="December">December</option>
+                                {
+                                    months.map( (month, index) => {
+                                        return (
+                                            <option key={index} value={month.value}>{month.title}</option>
+                                        )
+                                    })
+                                }
                             </select>
                             <select onChangeCapture={formik.handleChange} value={formik.values.year}  name="year" id="year" className='input-field-two'>
-                                <option value="2003">2003</option>
-                                <option value="2002">2002</option>
-                                <option value="2001">2001</option>
-                                <option value="2000">2000</option>
+                                {
+                                    years.map( (year, index) => {
+                                        return (
+                                            <option key={index} value={year.value}>{year.title}</option>
+                                        )
+                                    })
+                                }
                             </select>
                         </div>
                     </div>
